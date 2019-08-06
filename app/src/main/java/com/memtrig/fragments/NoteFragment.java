@@ -36,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.memtrig.R;
 import com.memtrig.serializer.Note;
+import com.memtrig.serializer.Task;
 
 import java.util.ArrayList;
 
@@ -180,6 +181,7 @@ public class NoteFragment extends Fragment {
                 }
                 if (titleText != null && !titleText.trim().isEmpty() && descriptionText != null &&
                         !descriptionText.trim().isEmpty()) {
+                    alertDialog.dismiss();
                     Note note = new Note();
                     note.setTitle(titleText);
                     note.setDescription(descriptionText);
@@ -190,7 +192,6 @@ public class NoteFragment extends Fragment {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Snackbar.make(getView(), "Success", Snackbar.LENGTH_SHORT).show();
-                                alertDialog.dismiss();
                             }
                         });
                     } else {
@@ -199,7 +200,6 @@ public class NoteFragment extends Fragment {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 Snackbar.make(getView(), "Success", Snackbar.LENGTH_SHORT).show();
-                                alertDialog.dismiss();
                             }
                         });
                     }
@@ -223,7 +223,15 @@ public class NoteFragment extends Fragment {
             Log.i("TAG", " data " + dataSnapshot);
             Note task = dataSnapshot.getValue(Note.class);
             task.setKey(dataSnapshot.getKey());
-            arrayList.add(task);
+            boolean exists = false;
+            for (Note note :arrayList) {
+                if (note.getKey().equals(task.getKey())) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                arrayList.add(task);
+            }
             if (adapter != null) {
                 adapter.notifyDataSetChanged();
             }
